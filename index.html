@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Spelling Practice</title>
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="wordgame.css">
+  <script type="text/javascript" src="wordlist.js"></script>
+  <script type="text/javascript" src="wordgame.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+  <button id="btnSpeak">Say Word</button>
+  <span>
+    💎<span class="score" id="diamondScore">0</span>
+    <span class="gold">★<span class="score" id="goldScore">0</span></span>
+    <span class="silver">★<span class="score" id="silverScore">0</span></span>
+    <span class="bronze">★<span class="score" id="bronzeScore">0</span></span>
+  </span>
+  <div class="bubble" id="divInput"></div>
+  <div id="history"></div>
+  <audio id="audioSource">
+</body>
+
+</html>

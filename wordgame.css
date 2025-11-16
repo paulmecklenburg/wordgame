@@ -1,0 +1,97 @@
+body {
+    font-family: "Josefin Sans", sans-serif;
+    text-transform: uppercase;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.gold {
+    color: gold;
+}
+
+.silver {
+    color: silver;
+}
+
+.bronze {
+    color: #ca9510;
+}
+
+.bubble {
+    border: 1px solid;
+    border-radius: 15px;
+    background-color: #ADD8E6;
+    border-color: #000000;
+    padding: 10px;
+    min-height: 1.25em;
+    line-height: 1.25;
+}
+
+.letter-bubble {
+    display: inline-block;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 2px;
+}
+
+.exact-match {
+    background-color: rgb(153, 184, 153);
+}
+
+.letter-match {
+    background-color: rgb(206, 206, 155);
+}
+
+.no-match {
+    background-color: rgb(173, 173, 173);
+}
+
+.score {
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+.score.pop {
+    animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+button {
+    display: inline-block;
+    outline: 0;
+    cursor: pointer;
+    padding: 5px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    vertical-align: middle;
+    border: 1px solid;
+    border-radius: 6px;
+    color: #0366d6;
+    background-color: #fafbfc;
+    border-color: #1b1f2326;
+    box-shadow: rgba(27, 31, 35, 0.04) 0px 1px 0px 0px, rgba(255, 255, 255, 0.25) 0px 1px 0px 0px inset;
+    transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    transition-property: color, background-color, border-color;
+
+    :hover {
+        color: #ffffff;
+        background-color: #0366d6;
+        border-color: #1b1f2326;
+        box-shadow: rgba(27, 31, 35, 0.1) 0px 1px 0px 0px, rgba(255, 255, 255, 0.03) 0px 1px 0px 0px inset;
+        transition-duration: 0.1s;
+    }
+}
