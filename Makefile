@@ -6,9 +6,10 @@ WORDS := $(file < $(WORDS_FILE))
 
 define WORD_TARGET_TEMPLATE
 
+# en_US-lessac-medium
 snd/$1.mp3: snd
 	@echo "Processing item: $1 ($$@)"
-	python3 -m piper -m en_US-lessac-medium -f - -- '$1.' | ffmpeg -y -i - -codec:a libmp3lame -q:a 2 $$@
+	python3 -m piper -m en_US-amy-medium -f - -- '$1.' | ffmpeg -y -i - -codec:a libmp3lame -q:a 2 $$@
 endef
 
 $(eval $(foreach word,$(WORDS),$(call WORD_TARGET_TEMPLATE,$(word))))
