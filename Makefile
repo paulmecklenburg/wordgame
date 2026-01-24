@@ -1,27 +1,21 @@
-WORDS_FILE := words.txt
+# Create the environment
+# python3 -m venv piper_env
+# Activate it
+# source piper_env/bin/activate
 
-WORDS := $(file < $(WORDS_FILE))
+WORDS_FILE := words.tsv
+
+WORDS := $(shell cut -f1 words.tsv)
 
 # $(info "words $(WORDS)")
 
-define WORD_TARGET_TEMPLATE
+wordlist.js: $(WORDS_FILE)
+	awk -F'\t' 'BEGIN {printf "const wordList = [\n"} {printf "  \"%s\",\n", $$1} END {print "];"}' $< > $@
 
-# en_US-lessac-medium
-snd/$1.mp3: snd
-	@echo "Processing item: $1 ($$@)"
-	python3 -m piper -m en_US-amy-medium -f - -- '$1.' | ffmpeg -y -i - -codec:a libmp3lame -q:a 2 $$@
-endef
-
-$(eval $(foreach word,$(WORDS),$(call WORD_TARGET_TEMPLATE,$(word))))
-
-# $(info "template foreach" $(foreach word,$(WORDS),$(call WORD_TARGET_TEMPLATE,$(word))))
-# $(info "targets foreach $(foreach word,$(WORDS),snd/$(word).mp3)")
-
-wordlist.js: words.txt
-	awk '{printf "%s\"%s\"", sep, $$0; sep=", "} END{print ""}' words.txt | sed 's/^/var wordList = [/; s/$$/];/' > $@
-
-snd:
+.PHONY: snd_mp3
+snd_mp3:
 	mkdir -p snd
+	python3 make_mp3s.py
 
 .PHONY: all
-all: wordlist.js $(foreach word,$(WORDS),snd/$(word).mp3)
+all: wordlist.js snd_mp3
