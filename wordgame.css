@@ -95,3 +95,15 @@ button {
         transition-duration: 0.1s;
     }
 }
+
+.track-setting {
+    font-size: 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    text-transform: none;
+    vertical-align: middle;
+}
+
+#controls {
+    margin-bottom: 10px;
+}
