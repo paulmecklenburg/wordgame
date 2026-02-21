@@ -49,6 +49,8 @@ body {
 .score {
     display: inline-block;
     transition: transform 0.15s ease;
+    font-size: 20px;
+    vertical-align: bottom;
 }
 
 .score.pop {
@@ -98,7 +100,7 @@ button {
 
 .track-setting {
     font-size: 12px;
-    margin-left: 10px;
+    margin-left: 30px;
     cursor: pointer;
     text-transform: none;
     vertical-align: middle;
