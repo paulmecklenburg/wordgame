@@ -144,8 +144,7 @@ function tryWordDone() {
     if (attemptCount >= MAX_ATTEMPTS) {
       const correctDiv = document.createElement('div');
       correctDiv.textContent = `The correct word was: ${targetWord.toUpperCase()}`;
-      correctDiv.style.color = '#0366d6';
-      correctDiv.style.fontSize = '0.8em';
+      correctDiv.classList.add('correct-answer-msg');
       newDiv.appendChild(correctDiv);
 
       updateWordPerformance(targetWord, attemptCount + 1); // Mark as struggled
