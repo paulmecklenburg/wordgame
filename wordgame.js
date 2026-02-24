@@ -2,14 +2,15 @@ const AUDIO_ID = 'audioSource';
 const INPUT_ID = 'divInput';
 const HISTORY_STORAGE_KEY = 'wordgame_history';
 const TRACKING_SETTING_KEY = 'wordgame_track_performance';
-const EMA_ALPHA = 0.7; // Smoothing factor for EMA
+const EMA_ALPHA = 0.3; // Smoothing factor for EMA (Updated from 0.7)
 const BASE_WORD_WEIGHT = 1.0; // Base weight for every word
+const MAX_ATTEMPTS = 5;
 
-var nextTargetWordInd = 0; // For sequential/shuffled word selection
-var targetWord;
-var attemptCount;
-var performanceHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '{}');
-var isTrackingEnabled = JSON.parse(localStorage.getItem(TRACKING_SETTING_KEY) || 'false');
+let nextTargetWordInd = 0; // For sequential/shuffled word selection
+let targetWord;
+let attemptCount;
+let performanceHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '{}');
+let isTrackingEnabled = JSON.parse(localStorage.getItem(TRACKING_SETTING_KEY) || 'false');
 
 function savePerformanceHistory() {
   localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(performanceHistory));
@@ -78,7 +79,7 @@ function changeTargetWord() {
 }
 
 function updateScoreById(id) {
-  el = document.getElementById(id);
+  const el = document.getElementById(id);
   el.textContent = Number(el.textContent) + 1;
   el.classList.remove('pop');
   void el.offsetWidth;
@@ -106,14 +107,21 @@ function tryRemoveLetter() {
 }
 
 function tryWordDone() {
-  var inputText = document.getElementById(INPUT_ID).textContent;
-  if (inputText.length < 1) return;
+  const inputElem = document.getElementById(INPUT_ID);
+  const inputText = inputElem.textContent;
+
+  if (inputText.length < 1) {
+    inputElem.classList.remove('shake');
+    void inputElem.offsetWidth;
+    inputElem.classList.add('shake');
+    return;
+  }
   console.log(inputText);
 
-  var historyDiv = document.getElementById('history'); // Renamed from 'history' to 'historyDiv' to avoid conflict
-  var newDiv = document.createElement('div');
+  const historyDiv = document.getElementById('history'); 
+  const newDiv = document.createElement('div');
   for (const [index, char] of Array.from(inputText).entries()) {
-    var newSpan = document.createElement('span');
+    const newSpan = document.createElement('span');
     newSpan.textContent = char;
     newSpan.classList.add('letter-bubble');
     if (targetWord[index] == char)
@@ -130,22 +138,32 @@ function tryWordDone() {
     updateScore(attemptCount);
     updateWordPerformance(targetWord, attemptCount); // Update performance history
     changeTargetWord();
-    newDiv.innerHTML += '✅';  // ✓
+    newDiv.innerHTML += ' ✅';  // ✓
   } else {
+    newDiv.innerHTML += ' ❌';
+    if (attemptCount >= MAX_ATTEMPTS) {
+      const correctDiv = document.createElement('div');
+      correctDiv.textContent = `The correct word was: ${targetWord.toUpperCase()}`;
+      correctDiv.style.color = '#0366d6';
+      correctDiv.style.fontSize = '0.8em';
+      newDiv.appendChild(correctDiv);
+
+      updateWordPerformance(targetWord, attemptCount + 1); // Mark as struggled
+      setTimeout(() => changeTargetWord(), 1500); // Give user time to see it
+    }
     attemptCount += 1;
-    newDiv.innerHTML += '❌';
   }
 
   historyDiv.insertBefore(newDiv, historyDiv.firstChild);
-  document.getElementById(INPUT_ID).textContent = '';
+  inputElem.textContent = '';
 }
 
 function isLetter(k) {
   if (k.length != 1) {
     return false;
   }
-  let n = k.charCodeAt(0);
-  return (n >= 65 && n < 91) || (n >= 97 && n < 123);
+  const n = k.toLowerCase().charCodeAt(0);
+  return (n >= 97 && n < 123);
 }
 
 function shuffle(array) {
@@ -153,7 +171,7 @@ function shuffle(array) {
 
   while (currentIndex != 0) {
 
-    let randomIndex = Math.floor(Math.random() * currentIndex);
+    const randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
     [array[currentIndex], array[randomIndex]] = [
@@ -162,10 +180,12 @@ function shuffle(array) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  var btnSpeak = document.getElementById('btnSpeak');
-  btnSpeak.addEventListener('click', () => {
+  const btnSpeak = document.getElementById('btnSpeak');
+  const playWord = () => {
     document.getElementById(AUDIO_ID).play();
-  });
+  };
+
+  btnSpeak.addEventListener('click', playWord);
 
   document.addEventListener('keydown', (event) => {
     if (isLetter(event.key)) {
@@ -174,6 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
       tryRemoveLetter();
     } else if (event.key == 'Enter') {
       tryWordDone();
+    } else if (event.key == ' ') {
+      event.preventDefault(); // Prevent page scroll
+      playWord();
     }
   });
 
@@ -187,12 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
   chkTrack.addEventListener('change', () => {
     isTrackingEnabled = chkTrack.checked;
     saveTrackingSetting();
-    // If tracking is enabled, re-shuffle/re-select based on weights
-    // If tracking is disabled, revert to simple sequential if desired, or keep current word.
-    // For now, simply changing the setting doesn't immediately change the target word.
   });
 
-
-  shuffle(wordList); // Still shuffle for initial sequential access if tracking is off.
+  if (!isTrackingEnabled) {
+    shuffle(wordList);
+  }
   changeTargetWord();
 }, {once: true});
